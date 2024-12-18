@@ -1,23 +1,32 @@
-name: C/C++ CI
+name: Build Project
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - main
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Usa un entorno Ubuntu en GitHub Actions
 
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: sudo apt install tree && tree && ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    - name: Check out the repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup Android SDK Tools
+      uses: actions/setup-android@v3.2.2
+
+    - name: Install required dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential
+        sudo apt install -y android-sdk
+        sudo apt install -y git
+
+    - name: Build with ndk-build
+      run: |
+        cd jni
+        ndk-build
